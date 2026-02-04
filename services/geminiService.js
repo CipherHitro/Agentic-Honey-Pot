@@ -23,7 +23,7 @@ You must return ONLY a JSON object. No prose. No markdown.
 async function analyzeScamMessage(messageText, history = []) {
   // Use 'gemini-1.5-flash' for speed or 'gemini-1.5-pro' for high-reasoning
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.5-pro",
+    model: "gemini-2.5-flash",
     systemInstruction: FRAUD_DETECTION_PROMPT,
   });
 
