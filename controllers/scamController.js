@@ -17,7 +17,7 @@ async function ReceiveMessageAndProcess(req,res) {
                 }
             }*/
     const { message, metadata } = req.body
-
+    // console.log(message);
     const aiResponse = await analyzeScamMessage(message.text, metadata)
     console.log("AI response in the API call : " , aiResponse)
 

@@ -1,0 +1,172 @@
+[
+    {
+        "sessionId": "wertyu-dfghj-ertyui",
+        "test": "correct"
+    },
+    {
+        "sessionId": "test-scam-002",
+        "test": "correct"
+    },
+    {
+        "sessionId": "test-normal-002",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-001",
+        "classification": "SCAM - Social Engineering Setup",
+        "message": {
+            "sender": "scammer",
+            "text": "Hi! Your Flipkart order #FK8829104 is out for delivery today. Our delivery partner noticed your building doesn't have a working lift. They may need help carrying it upstairs. Please confirm your floor number and if you'll be available between 2-5 PM. Thanks!",
+            "timestamp": 1770005529001
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "WhatsApp",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Legitimate delivery partners don't ask for building details via WhatsApp. This is information gathering for future delivery scams or to confirm someone is home for theft.",
+        "aiAnswer": {
+            "isScam": false,
+            "confidenceScore": 0.88,
+            "reasoning": "'The message includes a specific Flipkart order number and describes a plausible delivery challenge (broken lift requiring assistance). It requests only logistical information (floor number, availability) and does not ask for sensitive personal data, financial details, payment, or to click suspicious links. This indicates a legitimate delivery coordination attempt.'",
+            "detectedIndicators": [
+                "'specific_order_id_mentioned'",
+                "'plausible_delivery_scenario'",
+                "'no_sensitive_data_request'",
+                "'no_payment_request'"
+            ],
+            "scamType": "'not_scam'"
+        }
+    },
+    {
+        "sessionId": "hard-test-002",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-003",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-004",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-005",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-006",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-007",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-008",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-009",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-010",
+        "classification": "SCAM - Information Gathering for Insurance Fraud",
+        "message": {
+            "sender": "scammer",
+            "text": "Hi, this is regarding your car insurance renewal. I'm calling from Digit Insurance - your policy expires on 20-Feb-2026. We're offering a loyalty discount of 15% if you renew within 7 days. Can I quickly verify your vehicle registration number to generate the quote? It's RC-GJ01XX8392, right?",
+            "timestamp": 1770005529010
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "WhatsApp",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Insurance companies don't call/message from WhatsApp. Asking to 'verify' RC number they claim to already have is a trick to confirm they have correct info. Used for policy fraud or selling data.",
+        "aiAnswer": {
+            "isScam": false,
+            "confidenceScore": 0.7,
+            "reasoning": "The message appears to be a legitimate car insurance renewal reminder from 'Digit Insurance'. It provides specific policy details (expiration date, vehicle registration number) and asks to verify the already stated vehicle number, which is a common practice for legitimate businesses confirming customer information. While it includes a discount offer and a deadline (pressure tactic), these are standard sales strategies for insurance renewals and do not involve requests for sensitive credentials (OTP, PIN, CVV, password), suspicious links, or unusual payment methods.",
+            "detectedIndicators": [
+                "generic_greeting",
+                "pressure_tactic_with_deadline",
+                "unsolicited_offer_with_discount"
+            ],
+            "scamType": "not_scam"
+        }
+    },
+    {
+        "sessionId": "hard-test-011",
+        "classification": "SCAM - Fake Transaction Alert",
+        "message": {
+            "sender": "scammer",
+            "text": "Your SBI debit card ending 4729 was used for a transaction of ₹34,599 at Croma, Mumbai at 11:23 PM. If this wasn't you, please call our 24x7 fraud helpline immediately at 022-61234567 or SMS BLOCK to this number. Your card will be auto-blocked in 2 hours for security. Available balance: ₹1,24,831",
+            "timestamp": 1770005529011
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Real SBI uses sender ID 'SBI' or 'SBIPSG', not 10-digit numbers. Phone number format (022-6xxxx) looks real but is fake. Real SBI fraud alerts direct to 1800 numbers, not local Mumbai numbers. Shows balance (banks don't do this in fraud alerts).",
+        "aiAnswer": {
+            "isScam": false,
+            "confidenceScore": 0.95,
+            "reasoning": "The message is a standard fraud alert from SBI, providing specific transaction details (card number, amount, merchant, time, balance) and legitimate contact methods (helpline number starting with 022 for Mumbai, SMS option) for reporting unauthorized activity. It does not request sensitive credentials, click suspicious links, or demand unusual payment methods, which are common scam tactics.",
+            "detectedIndicators": [
+                "Specific transaction details (card number, amount, merchant, time, location)",
+                "Account balance information provided",
+                "Legitimate contact methods (phone number with regional code, SMS option)",
+                "Absence of suspicious links or requests for OTP/PIN/CVV",
+                "Standard official language and format for bank alerts"
+            ],
+            "scamType": "not_scam"
+        }
+    },
+    {
+        "sessionId": "hard-test-012",
+        "classification": "LEGITIMATE - UX Research Recruitment",
+        "message": {
+            "sender": "user",
+            "text": "Congratulations! You've been selected for Google India's UX Research study on payment apps. 60-minute online session, ₹4,500 Amazon voucher compensation. We found you through your LinkedIn profile. Available dates: 12-14 Feb. Reply with preferred date and email for NDA. Limited 20 participants.",
+            "timestamp": 1770005529012
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "Email",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyLegit": "This is tricky but LEGITIMATE. Google does conduct paid UX research. ₹4,500 for 60-min is standard industry rate. LinkedIn sourcing is common. Asking for email for NDA is professional. No upfront payment requested. (Note: In real scenario, verify sender email domain is @google.com)",
+        "aiAnswer": {
+            "isScam": true,
+            "confidenceScore": 0.9,
+            "reasoning": "The message impersonates Google India offering an unsolicited, highly compensated UX research study. It uses a generic greeting ('Congratulations!'), employs pressure tactics ('Limited 20 participants'), and requests personal information (email for NDA) as an initial step. This combination is characteristic of fake offers and phishing attempts designed to lure recipients into providing data or engaging with malicious links, rather than a genuine first contact from a major company like Google.",
+            "detectedIndicators": [
+                "Impersonation of a known company (Google India)",
+                "'Unsolicited prize/lottery/inheritance notifications (opportunity)'",
+                "Requests for personal information without clear context (email for NDA as initial contact)",
+                "Pressure tactics with tight deadlines ('Limited 20 participants')",
+                "Generic greetings without personalization ('Congratulations!')",
+                "High compensation offered as a lure (₹4,500 Amazon voucher for 60-min session)"
+            ],
+            "scamType": "fake_offer"
+        }
+    },
+    {
+        "sessionId": "hard-test-013",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-014",
+        "test": "correct"
+    },
+    {
+        "sessionId": "hard-test-015",
+        "test": "correct"
+    }
+]
