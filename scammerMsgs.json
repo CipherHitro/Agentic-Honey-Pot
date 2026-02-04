@@ -1,0 +1,284 @@
+[
+    {
+        "sessionId": "wertyu-dfghj-ertyui",
+        "message": {
+            "sender": "scammer",
+            "text": "Your bank account will be blocked today. Verify immediately.",
+            "timestamp": 1770005528731
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        }
+    },
+    {
+        "sessionId": "test-scam-002",
+        "message": {
+            "sender": "scammer",
+            "text": "Hi, I’m calling regarding a small mismatch noticed during today’s routine verification. It should be quick to resolve so there’s no interruption in services. Can you confirm the payment method you usually use?",
+            "timestamp": 1770005529001
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        }
+    },
+    {
+        "sessionId": "test-normal-002",
+        "message": {
+            "sender": "user",
+            "text": "Reminder: Your electricity bill for this month is due tomorrow. Please pay via the official provider app to avoid late charges. For details, visit the customer portal or contact support.",
+            "timestamp": 1770005529002
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        }
+    },
+    {
+        "sessionId": "hard-test-001",
+        "classification": "SCAM - Social Engineering Setup",
+        "message": {
+            "sender": "scammer",
+            "text": "Hi! Your Flipkart order #FK8829104 is out for delivery today. Our delivery partner noticed your building doesn't have a working lift. They may need help carrying it upstairs. Please confirm your floor number and if you'll be available between 2-5 PM. Thanks!",
+            "timestamp": 1770005529001
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "WhatsApp",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Legitimate delivery partners don't ask for building details via WhatsApp. This is information gathering for future delivery scams or to confirm someone is home for theft."
+    },
+    {
+        "sessionId": "hard-test-002",
+        "classification": "SCAM - Fake Bank Alert",
+        "message": {
+            "sender": "scammer",
+            "text": "Hello, this is Rahul from HDFC Bank's fraud prevention team. We detected 3 login attempts from a new device in Mumbai at 2:47 AM. Since you're registered in Ahmedabad, we've temporarily limited your account. No action needed if this wasn't you - the restriction will auto-lift in 24 hours. You can also call our verified number 1800-267-4332 to expedite. Stay safe!",
+            "timestamp": 1770005529002
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Banks never send personalized messages from 'Rahul' or similar names. The phone number format looks real but is likely spoofed. Real HDFC uses short codes like 'VM-HDFCBK'."
+    },
+    {
+        "sessionId": "hard-test-003",
+        "classification": "SCAM - Job Scam / Information Gathering",
+        "message": {
+            "sender": "scammer",
+            "text": "Hey! Remember me from the tech meetup last month? I moved to a product role at Razorpay. We're hiring for your profile - APM position, 35-40 LPA range. Not posted publicly yet. Interested? I can fast-track your resume directly to the hiring manager. What's your current CTC?",
+            "timestamp": 1770005529003
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "WhatsApp",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Vague 'remember me' claim, asking for CTC upfront (used to gauge victim's financial status), unpublished positions. Leads to fake interview/job offer scams requiring payment."
+    },
+    {
+        "sessionId": "hard-test-004",
+        "classification": "SCAM - Fake Government Notice",
+        "message": {
+            "sender": "scammer",
+            "text": "Your Aadhaar-linked mobile number will be deactivated as per TRAI regulations due to incomplete eKYC. Last date: 15-Feb-2026. Visit your nearest Airtel/Jio store with original Aadhaar or complete online at update-ekycportal.in within 72 hours. Ignore if already completed. -DoT",
+            "timestamp": 1770005529004
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Fake domain 'update-ekycportal.in' (real would be gov.in). DoT/TRAI never send such messages. eKYC is done through telecom providers directly, not third-party sites."
+    },
+    {
+        "sessionId": "hard-test-005",
+        "classification": "LEGITIMATE - Appointment Rescheduling",
+        "message": {
+            "sender": "user",
+            "text": "Hi, I'm Dr. Priya's assistant from HealthFirst Clinic. Your appointment on Thursday has been rescheduled to Friday 11 AM due to an emergency surgery. Please reply YES to confirm or call 080-41234567 to reschedule. Your prescription refill is also ready for pickup.",
+            "timestamp": 1770005529005
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyLegit": "Standard medical appointment rescheduling. No payment requests, no sensitive info asked. Proper Bangalore phone number format. Only asks for confirmation."
+    },
+    {
+        "sessionId": "hard-test-006",
+        "classification": "SCAM - UPI Phishing",
+        "message": {
+            "sender": "scammer",
+            "text": "Amazon Pay: You've received ₹500 cashback in your Amazon Pay balance from your recent purchase. However, our system shows your UPI ID is not linked for instant settlements. Current balance: ₹847. To link UPI for faster refunds and cashbacks, please verify your primary UPI ID.",
+            "timestamp": 1770005529006
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Amazon Pay never asks to 'verify UPI ID' via SMS. UPI linking happens in-app only. 'Instant settlements' is fabricated urgency. Classic phishing for UPI credentials."
+    },
+    {
+        "sessionId": "hard-test-007",
+        "classification": "SCAM - Impersonation / Social Engineering",
+        "message": {
+            "sender": "scammer",
+            "text": "Hey! This is Neha from apartment 405. I'm locked out and my phone's about to die. Can you ask the security to give my spare keys to my friend Amit? He's wearing a blue shirt and will be there in 10 mins. He has my ID. Really appreciate it! Will return the favor 🙏",
+            "timestamp": 1770005529007
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "WhatsApp",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Classic neighbor impersonation scam. If phone is dying, how are they messaging? Trying to get stranger access to building. Real neighbors would contact security directly or have building group."
+    },
+    {
+        "sessionId": "hard-test-008",
+        "classification": "SCAM - Phishing Link",
+        "message": {
+            "sender": "scammer",
+            "text": "URGENT: Your Netflix subscription failed due to payment decline. To avoid interruption, update payment details at netflix-billing-secure.com/update within 48 hours. Current plan: Premium (₹649/mo). Your next billing date is 10-Feb-2026. Need help? Contact support@netflix.com",
+            "timestamp": 1770005529008
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "Email",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Fake domain 'netflix-billing-secure.com' (real is netflix.com). Netflix never sends payment links via email. Email address might be spoofed. Classic phishing."
+    },
+    {
+        "sessionId": "hard-test-009",
+        "classification": "SCAM - Fake Utility Bill / UPI Fraud",
+        "message": {
+            "sender": "scammer",
+            "text": "Your electricity bill is overdue by ₹3,847 for Jan 2026. Last date to pay without penalty: 08-Feb-2026. Disconnection notice issued. Pay immediately via Google Pay to 9876543210@paytm (Authorized MSEB Collector) or visit MSEB office with consumer no. 441276589034. SMS PAID to 9876543210 after payment.",
+            "timestamp": 1770005529009
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "CRITICAL: Government utilities NEVER accept payment to personal UPI IDs. Real MSEB uses official portals/apps. '9876543210@paytm' is personal account, not official collector. Major red flag."
+    },
+    {
+        "sessionId": "hard-test-010",
+        "classification": "SCAM - Information Gathering for Insurance Fraud",
+        "message": {
+            "sender": "scammer",
+            "text": "Hi, this is regarding your car insurance renewal. I'm calling from Digit Insurance - your policy expires on 20-Feb-2026. We're offering a loyalty discount of 15% if you renew within 7 days. Can I quickly verify your vehicle registration number to generate the quote? It's RC-GJ01XX8392, right?",
+            "timestamp": 1770005529010
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "WhatsApp",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Insurance companies don't call/message from WhatsApp. Asking to 'verify' RC number they claim to already have is a trick to confirm they have correct info. Used for policy fraud or selling data."
+    },
+    {
+        "sessionId": "hard-test-011",
+        "classification": "SCAM - Fake Transaction Alert",
+        "message": {
+            "sender": "scammer",
+            "text": "Your SBI debit card ending 4729 was used for a transaction of ₹34,599 at Croma, Mumbai at 11:23 PM. If this wasn't you, please call our 24x7 fraud helpline immediately at 022-61234567 or SMS BLOCK to this number. Your card will be auto-blocked in 2 hours for security. Available balance: ₹1,24,831",
+            "timestamp": 1770005529011
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Real SBI uses sender ID 'SBI' or 'SBIPSG', not 10-digit numbers. Phone number format (022-6xxxx) looks real but is fake. Real SBI fraud alerts direct to 1800 numbers, not local Mumbai numbers. Shows balance (banks don't do this in fraud alerts)."
+    },
+    {
+        "sessionId": "hard-test-012",
+        "classification": "LEGITIMATE - UX Research Recruitment",
+        "message": {
+            "sender": "user",
+            "text": "Congratulations! You've been selected for Google India's UX Research study on payment apps. 60-minute online session, ₹4,500 Amazon voucher compensation. We found you through your LinkedIn profile. Available dates: 12-14 Feb. Reply with preferred date and email for NDA. Limited 20 participants.",
+            "timestamp": 1770005529012
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "Email",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyLegit": "This is tricky but LEGITIMATE. Google does conduct paid UX research. ₹4,500 for 60-min is standard industry rate. LinkedIn sourcing is common. Asking for email for NDA is professional. No upfront payment requested. (Note: In real scenario, verify sender email domain is @google.com)"
+    },
+    {
+        "sessionId": "hard-test-013",
+        "classification": "LEGITIMATE - Zomato Gold Renewal",
+        "message": {
+            "sender": "user",
+            "text": "Hi! Your Zomato Gold membership is expiring in 3 days. Renew now at 40% off - ₹899 instead of ₹1,499 for 12 months. Offer valid only for existing members till midnight. Benefits: Unlimited free delivery + Gold access at 15,000+ restaurants. Click zomato.gold/renew-premium or call 1800-208-9898",
+            "timestamp": 1770005529013
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyLegit": "Zomato regularly sends renewal offers. Pricing is accurate. Domain 'zomato.gold' is official Zomato subdomain. 1800 number is standard customer care format. Renewal urgency is legitimate marketing tactic. No credential/OTP requests."
+    },
+    {
+        "sessionId": "hard-test-014",
+        "classification": "SCAM - Emergency/Relative in Trouble Scam",
+        "message": {
+            "sender": "scammer",
+            "text": "Hello, your father is admitted to Metro Hospital, Ahmedabad after a minor accident near SG Highway. He's stable but in ER. Receptionist says he doesn't have his phone. They need emergency contact verification and ₹15,000 deposit for CT scan. Can you authorize? I'm his colleague from office.",
+            "timestamp": 1770005529014
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "WhatsApp",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "CLASSIC 'relative in trouble' scam. Real hospitals contact emergency contacts from patient records, not via unknown WhatsApp. Colleague would give name/company. Hospital deposits are paid at hospital, not authorized via message. Emotional manipulation + urgency."
+    },
+    {
+        "sessionId": "hard-test-015",
+        "classification": "SCAM - Fake Security Alert",
+        "message": {
+            "sender": "scammer",
+            "text": "ICICI Bank Alert: We've noticed unusual login patterns on your iMobile app. As a precautionary measure, we've enabled 2-step verification. You'll receive an OTP shortly to re-authenticate your device. Valid for 10 minutes. If you don't complete this, net banking will be temporarily suspended for 24-48 hours.",
+            "timestamp": 1770005529015
+        },
+        "conversationHistory": [],
+        "metadata": {
+            "channel": "SMS",
+            "language": "English",
+            "locale": "IN"
+        },
+        "whyScam": "Banks never enable 2FA via SMS and ask for OTP. If 2FA is being enabled, it happens in-app, not via SMS OTP. 'Re-authenticate' is phishing language. Real ICICI uses sender ID 'ICICIB' not full text. Suspension threat creates urgency."
+    }
+]

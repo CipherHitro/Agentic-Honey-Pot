@@ -16,8 +16,9 @@ async function ReceiveMessageAndProcess(req,res) {
                     "locale": "IN"
                 }
             }*/
-    const {message, conversationHistory} = req.body
-    const aiResponse = await analyzeScamMessage(message.text, conversationHistory)
+    const { message, metadata } = req.body
+
+    const aiResponse = await analyzeScamMessage(message.text, metadata)
     console.log("AI response in the API call : " , aiResponse)
 
     console.log("body : " , req.body)
