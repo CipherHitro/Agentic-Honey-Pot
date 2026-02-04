@@ -1,0 +1,22 @@
+[
+  {
+    "isScam": false,
+    "confidenceScore": 0.91,
+    "reasoning": "The message clearly identifies the sender as an assistant from HealthFirst Clinic, provides specific details about an appointment reschedule with a plausible reason (emergency surgery), and offers standard methods for confirmation (reply YES) or rescheduling (call a local phone number). It also mentions a legitimate service (prescription refill ready for pickup). There are no suspicious links, urgent threats, requests for sensitive personal or financial information, or payment demands. All elements align with a legitimate medical communication.",
+    "detectedIndicators": [],
+    "scamType": "not_scam"
+  },
+  {
+    "isScam": true,
+    "confidenceScore": 0.95,
+    "reasoning": "The message employs impersonation by claiming to be a neighbor ('Neha from 405') and creates a false sense of urgency ('phone's about to die', '10 mins') to pressure the recipient into giving apartment keys to an unverified third party ('Amit'). This is a strong social engineering attempt to gain unauthorized access to property.",
+    "detectedIndicators": [
+      "Impersonation of a known contact/neighbor",
+      "Pressure tactics with tight deadlines",
+      "Request for sensitive action (giving keys to an unverified person)",
+      "Unsolicited request from an unverified source",
+      "Lack of direct verification for the request"
+    ],
+    "scamType": "impersonation"
+  }
+]

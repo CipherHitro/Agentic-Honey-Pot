@@ -98,7 +98,6 @@ async function analyzeScamMessage(messageText, metadata) {
     });
 
     const responseText = result.response.text();
-    console.log("Response text in gemini service : " , responseText)
 
     return JSON.parse(responseText); // Convert string to JS Object
   } catch (error) {
