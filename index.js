@@ -1,7 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const { connectMongoDB } = require('./connection')
-const { useScamRoute } = require('./routes/scamRoute')
+const useScamRoute  = require('./routes/scamRoute')
 
 // Mongo DB connections
 connectMongoDB(process.env.MONGOURL).then(() => {console.log("MongoDB connected")}).catch((err) => console.error(err))
@@ -14,6 +14,7 @@ app.use(express.json())
 
 // API Routes
 app.use('/api', useScamRoute);
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
