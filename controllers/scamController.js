@@ -1,6 +1,7 @@
-const Session = require('../models/scamModel');
-const { analyzeScamMessage } = require('../services/geminiService');
-const { modelWithTools, SYSTEM_PROMPT, recordScamIntelligence } = require('../services/aiChatService');
+import Session from '../models/scamModel.js';
+import { analyzeScamMessage } from '../services/geminiService.js';
+import { modelWithTools, SYSTEM_PROMPT } from '../services/aiChatService.js';
+import { getSentimentScore } from '../utils/sentimentAnalysis.js';
 
 async function ReceiveMessageAndProcess(req, res) {
     try {
@@ -15,7 +16,7 @@ async function ReceiveMessageAndProcess(req, res) {
         }
 
         let session = await Session.findOne({ sessionId });
-
+        console.log(session);
         // Step 1: Initialize new session if needed
         if (!session) {
             console.log(`[NEW SESSION] ${sessionId} - Analyzing initial message...`);
@@ -191,4 +192,4 @@ async function GetSessionIntelligence(req, res) {
     }
 }
 
-module.exports = { ReceiveMessageAndProcess, GetSessionIntelligence };
+export { ReceiveMessageAndProcess, GetSessionIntelligence };

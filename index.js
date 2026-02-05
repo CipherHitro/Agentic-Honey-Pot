@@ -1,11 +1,12 @@
-const express = require('express');
-require('dotenv').config();
-const { connectMongoDB } = require('./connection')
-const useScamRoute  = require('./routes/scamRoute')
-const responseRoute  = require('./routes/responseRoute')
+import express from 'express';
+import dotenv from 'dotenv';
+import { connectMongoDB } from './connection.js';
+import useScamRoute from './routes/scamRoute.js';
+
+dotenv.config();
 
 // Mongo DB connections
-connectMongoDB(process.env.MONGOURL).then(() => {console.log("MongoDB connected")}).catch((err) => console.error(err))
+connectMongoDB("mongodb://localhost:27017/?directConnection=true").then(() => {console.log("MongoDB connected")}).catch((err) => console.error(err))
 const app = express();
 const port = 4000; 
 

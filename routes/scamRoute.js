@@ -1,8 +1,8 @@
-const express = require("express")
-const { ReceiveMessageAndProcess } = require('../controllers/scamController')
+import express from 'express';
+import { ReceiveMessageAndProcess } from '../controllers/scamController.js';
 
 const router = express.Router();
 
-router.post('/scam-listener', ReceiveMessageAndProcess)
+router.post('/scam-listener', ReceiveMessageAndProcess);
 
-module.exports = router
+export default router;
