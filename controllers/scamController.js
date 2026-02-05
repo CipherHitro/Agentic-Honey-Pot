@@ -1,7 +1,7 @@
 import Session from '../models/scamModel.js';
 import { analyzeScamMessage } from '../services/geminiService.js';
-import { modelWithTools, SYSTEM_PROMPT } from '../services/aiChatService.js';
-import { getSentimentScore } from '../utils/sentimentAnalysis.js';
+import { modelWithTools, recordScamIntelligence, SYSTEM_PROMPT } from '../services/aiChatService.js';
+import { ToolMessage } from "@langchain/core/messages";
 
 async function ReceiveMessageAndProcess(req, res) {
     try {
@@ -16,33 +16,39 @@ async function ReceiveMessageAndProcess(req, res) {
         }
 
         let session = await Session.findOne({ sessionId });
-        console.log(session);
-        // Step 1: Initialize new session if needed
+
+        // Step 1: Initialize new session if needed (with race condition protection)
         if (!session) {
             console.log(`[NEW SESSION] ${sessionId} - Analyzing initial message...`);
             
             const analysis = await analyzeScamMessage(message.text, metadata);
             
-            session = new Session({
-                sessionId,
-                scamDetected: analysis.isScam,
-                status: analysis.isScam ? 'active' : 'completed',
-                metadata: metadata || {},
-                conversationHistory: [],
-                extractedIntelligence: {
-                    bankAccounts: [],
-                    upiIds: [],
-                    phishingLinks: [],
-                    phoneNumbers: [],
-                    suspiciousKeywords: analysis.keywords || []
+            // Atomic upsert to prevent duplicate sessions
+            session = await Session.findOneAndUpdate(
+                { sessionId },
+                {
+                    $setOnInsert: {
+                        sessionId,
+                        scamDetected: analysis.isScam,
+                        status: analysis.isScam ? 'active' : 'completed',
+                        metadata: metadata || {},
+                        conversationHistory: [],
+                        extractedIntelligence: {
+                            bankAccounts: [],
+                            upiIds: [],
+                            phishingLinks: [],
+                            phoneNumbers: [],
+                            suspiciousKeywords: analysis.keywords || []
+                        },
+                        agentNotes: analysis.reasoning || "",
+                        totalMessagesExchanged: 0
+                    }
                 },
-                agentNotes: analysis.reasoning || "",
-                totalMessagesExchanged: 0
-            });
+                { upsert: true, new: true }
+            );
 
-            // If not a scam, save and exit early
+            // If not a scam, exit early
             if (!analysis.isScam) {
-                await session.save();
                 return res.status(200).json({ 
                     status: "success", 
                     reply: "Thank you for your message.", 
@@ -52,7 +58,7 @@ async function ReceiveMessageAndProcess(req, res) {
         }
 
         // Step 2: Check if session is still active
-        if (session.status === 'completed') {
+        if (session.status === 'completed' || session.status === 'error') {
             return res.status(200).json({
                 status: "success",
                 reply: "This conversation has ended. Thank you!",
@@ -60,14 +66,14 @@ async function ReceiveMessageAndProcess(req, res) {
             });
         }
 
-        // Step 3: Build conversation context for AI
+        // Step 3: Build conversation context for AI (CORRECT FORMAT)
         const conversationMessages = [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...session.conversationHistory.map(msg => ({
-                role: msg.sender === "scammer" ? "user" : "assistant",
-                content: msg.text
-            })),
-            { role: "user", content: message.text }
+            ["system", SYSTEM_PROMPT],
+            ...session.conversationHistory.map(msg => [
+                msg.sender === "scammer" ? "human" : "ai", 
+                msg.text
+            ]),
+            ["human", message.text]
         ];
 
         console.log(`[AI PROCESSING] Session ${sessionId} - Message #${session.totalMessagesExchanged + 1}`);
@@ -82,34 +88,50 @@ async function ReceiveMessageAndProcess(req, res) {
             const toolMessages = [];
             
             for (const toolCall of aiResponse.tool_calls) {
-                // Inject sessionId into tool arguments
-                const toolArgs = {
-                    ...toolCall.args,
-                    sessionId: sessionId
-                };
+                try {
+                    // Inject sessionId into tool arguments
+                    const toolArgs = {
+                        ...toolCall.args,
+                        sessionId: sessionId
+                    };
 
-                // Execute the tool
-                const toolResult = await recordScamIntelligence.invoke(toolArgs);
-                
-                toolMessages.push({
-                    role: "tool",
-                    content: toolResult,
-                    tool_call_id: toolCall.id
-                });
+                    // Execute the tool
+                    const toolResult = await recordScamIntelligence.invoke(toolArgs);
+                    
+                    // Correct LangChain tool message format
+                    toolMessages.push(
+                        new ToolMessage({
+                            content: toolResult,
+                            tool_call_id: toolCall.id
+                        })
+                    );
+                } catch (toolError) {
+                    console.error(`[TOOL ERROR] ${toolCall.name}:`, toolError);
+                    toolMessages.push(
+                        new ToolMessage({
+                            content: `Error: ${toolError.message}`,
+                            tool_call_id: toolCall.id
+                        })
+                    );
+                }
             }
 
             // Step 6: Second AI invocation to generate natural response after logging
             const finalMessages = [
                 ...conversationMessages,
-                aiResponse, // The message with tool_calls
-                ...toolMessages // The tool results
+                aiResponse, // The AIMessage with tool_calls
+                ...toolMessages // The ToolMessage responses
             ];
 
             aiResponse = await modelWithTools.invoke(finalMessages);
         }
 
-        // Step 7: Extract final AI reply
-        const aiReply = aiResponse.content || "Just a moment... checking my app...";
+        // Step 7: Extract final AI reply with validation
+        if (!aiResponse || !aiResponse.content) {
+            throw new Error("AI returned empty or invalid response");
+        }
+        
+        const aiReply = aiResponse.content;
 
         // Step 8: Update conversation history
         session.conversationHistory.push(
@@ -127,17 +149,17 @@ async function ReceiveMessageAndProcess(req, res) {
 
         return res.status(200).json({
             status: "success",
-            reply: aiReply,
-            scamDetected: true,
-            sessionInfo: {
-                messagesExchanged: session.totalMessagesExchanged,
-                intelligenceGathered: {
-                    upiIds: session.extractedIntelligence.upiIds.length,
-                    bankAccounts: session.extractedIntelligence.bankAccounts.length,
-                    phishingLinks: session.extractedIntelligence.phishingLinks.length,
-                    phoneNumbers: session.extractedIntelligence.phoneNumbers.length
-                }
-            }
+            reply: aiReply
+            // scamDetected: true,
+            // sessionInfo: {
+            //     messagesExchanged: session.totalMessagesExchanged,
+            //     intelligenceGathered: {
+            //         upiIds: session.extractedIntelligence.upiIds.length,
+            //         bankAccounts: session.extractedIntelligence.bankAccounts.length,
+            //         phishingLinks: session.extractedIntelligence.phishingLinks.length,
+            //         phoneNumbers: session.extractedIntelligence.phoneNumbers.length
+            //     }
+            // }
         });
 
     } catch (error) {
@@ -148,7 +170,10 @@ async function ReceiveMessageAndProcess(req, res) {
             if (req.body.sessionId) {
                 await Session.findOneAndUpdate(
                     { sessionId: req.body.sessionId },
-                    { status: 'error', agentNotes: error.message }
+                    { 
+                        status: 'error', 
+                        agentNotes: `Error: ${error.message}` 
+                    }
                 );
             }
         } catch (dbError) {
@@ -164,32 +189,4 @@ async function ReceiveMessageAndProcess(req, res) {
 }
 
 // Optional: Endpoint to get session intelligence summary
-async function GetSessionIntelligence(req, res) {
-    try {
-        const { sessionId } = req.params;
-        
-        const session = await Session.findOne({ sessionId });
-        
-        if (!session) {
-            return res.status(404).json({ status: "error", message: "Session not found" });
-        }
-
-        return res.status(200).json({
-            status: "success",
-            data: {
-                sessionId: session.sessionId,
-                scamDetected: session.scamDetected,
-                status: session.status,
-                extractedIntelligence: session.extractedIntelligence,
-                totalMessages: session.totalMessagesExchanged,
-                conversationHistory: session.conversationHistory,
-                metadata: session.metadata
-            }
-        });
-    } catch (error) {
-        console.error("Error fetching session:", error);
-        return res.status(500).json({ status: "error", message: error.message });
-    }
-}
-
-export { ReceiveMessageAndProcess, GetSessionIntelligence };
+export { ReceiveMessageAndProcess };

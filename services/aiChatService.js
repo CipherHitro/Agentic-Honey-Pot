@@ -13,40 +13,40 @@ const recordScamIntelligence = tool(
         return "No intelligence to record.";
       }
 
-      // const session = await Session.findOne({ sessionId });
-      // if (!session) {
-      //   return "Error: Session not found";
-      // }
+      const session = await Session.findOne({ sessionId });
+      if (!session) {
+        return "Error: Session not found";
+      }
 
       // Store extracted intelligence without duplicates
-      // findings.forEach(({ type, value }) => {
-      //   const normalizedValue = value.trim().toLowerCase();
+      findings.forEach(({ type, value }) => {
+        const normalizedValue = value.trim().toLowerCase();
         
-      //   switch (type) {
-      //     case "upiId":
-      //       if (!session.extractedIntelligence.upiIds.includes(normalizedValue)) {
-      //         session.extractedIntelligence.upiIds.push(normalizedValue);
-      //       }
-      //       break;
-      //     case "bankAccount":
-      //       if (!session.extractedIntelligence.bankAccounts.includes(normalizedValue)) {
-      //         session.extractedIntelligence.bankAccounts.push(normalizedValue);
-      //       }
-      //       break;
-      //     case "phishingLink":
-      //       if (!session.extractedIntelligence.phishingLinks.includes(normalizedValue)) {
-      //         session.extractedIntelligence.phishingLinks.push(normalizedValue);
-      //       }
-      //       break;
-      //     case "phoneNumber":
-      //       if (!session.extractedIntelligence.phoneNumbers.includes(normalizedValue)) {
-      //         session.extractedIntelligence.phoneNumbers.push(normalizedValue);
-      //       }
-      //       break;
-      //   }
-      // });
+        switch (type) {
+          case "upiId":
+            if (!session.extractedIntelligence.upiIds.includes(normalizedValue)) {
+              session.extractedIntelligence.upiIds.push(normalizedValue);
+            }
+            break;
+          case "bankAccount":
+            if (!session.extractedIntelligence.bankAccounts.includes(normalizedValue)) {
+              session.extractedIntelligence.bankAccounts.push(normalizedValue);
+            }
+            break;
+          case "phishingLink":
+            if (!session.extractedIntelligence.phishingLinks.includes(normalizedValue)) {
+              session.extractedIntelligence.phishingLinks.push(normalizedValue);
+            }
+            break;
+          case "phoneNumber":
+            if (!session.extractedIntelligence.phoneNumbers.includes(normalizedValue)) {
+              session.extractedIntelligence.phoneNumbers.push(normalizedValue);
+            }
+            break;
+        }
+      });
 
-      // await session.save();
+      await session.save();
 
       const typesLogged = findings.map(f => f.type).join(", ");
       console.log(`[INTEL LOGGED] Session ${sessionId}: ${typesLogged}`);
@@ -83,9 +83,9 @@ const recordScamIntelligence = tool(
     }),
   }
 );
-// console.log(process.env.GEMINI_API);
+
 const model = new ChatGroq({
-  apiKey: "sk_D3iOnX9aI8K6gB9qCWyVWGdyb3FYQ9lSd7q7LAXrzZXlflIH3BM8",
+  apiKey: process.env.GROQ_API,
   model: "llama-3.3-70b-versatile",
   temperature: 0.85, // Higher for more human-like variability
 });

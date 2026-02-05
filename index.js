@@ -6,7 +6,7 @@ import useScamRoute from './routes/scamRoute.js';
 dotenv.config();
 
 // Mongo DB connections
-connectMongoDB("mongodb://localhost:27017/?directConnection=true").then(() => {console.log("MongoDB connected")}).catch((err) => console.error(err))
+connectMongoDB(process.env.MONGODB_URI).then(() => {console.log("MongoDB connected")}).catch((err) => console.error(err))
 const app = express();
 const port = 4000; 
 

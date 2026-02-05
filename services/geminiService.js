@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-
+import { configDotenv } from "dotenv";
+configDotenv()
 // Initialize Gemini
-const genAI = new GoogleGenerativeAI("AIzaSyCE_QGeQnCFVjZiG99yhH2kfPgghxwwG4k");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
 
 const FRAUD_DETECTION_PROMPT = `
 You are an elite Fraud Detection AI Engine specialized in identifying scams, phishing, and fraudulent messages across SMS, WhatsApp, Email, and Chat platforms.
