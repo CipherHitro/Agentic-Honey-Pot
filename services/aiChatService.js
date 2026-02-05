@@ -1,7 +1,8 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-
+import { configDotenv } from "dotenv";
+configDotenv()
 // 1. DEFINE THE TOOL: The AI's "hands" to save data to your DB
 const recordScamIntelligence = tool(
   async ({ type, value }) => {
