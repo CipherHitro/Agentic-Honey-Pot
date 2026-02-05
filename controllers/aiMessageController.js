@@ -1,25 +1,5 @@
 const { recordScamIntelligence, SYSTEM_PROMPT, modelWithTools,model } = require('../services/aiChatService');
 
-// const model = new ChatGoogleGenerativeAI({
-//   apiKey: process.env.GOOGLE_API_KEY,
-//   modelName: "gemini-1.5-flash",
-//   temperature: 0.7, // 0.7 allows for natural, varied human-like speech
-// });
-
-// const modelWithTools = model.bindTools([recordScamIntelligence]);
-
-    // function injectHumanError(text) {
-    //   if (Math.random() > 0.8) { // 20% chance to add a typo
-    //     const words = text.split(' ');
-    //     const index = Math.floor(Math.random() * words.length);
-    //     // Simple typo: swap 'the' for 'teh'
-    //     words[index] = words[index].replace('th', 'ht').replace('ie', 'ei'); 
-    //     return words.join(' ');
-    //   }
-    //   return text;
-    // }
-
-
 
 async function ReceiveMessageAndGivenAIResponse(req,res) {
     const { message, conversationHistory } = req.body;
@@ -32,6 +12,26 @@ async function ReceiveMessageAndGivenAIResponse(req,res) {
   try {
     // console.log("Messages sent to AI:", messages);
     const response = await modelWithTools.invoke(messages);
+
+    if (response.tool_calls?.length) {
+      for (const call of response.tool_calls) {
+        if (call.name === "record_scam_data") {
+          const result = await recordScamIntelligence.invoke(call.args);
+
+          // Send result back to model
+          const final = await model.invoke([
+            response,
+            {
+              role: "tool",
+              name: "record_scam_data",
+              content: result,
+            },
+          ]);
+
+          console.log(final.content);
+        }
+      }
+  }
 
     // If the model called a tool, it might not return text immediately.
     // In a simple setup, we just return the AI's textual reply.
