@@ -16,7 +16,6 @@ async function ReceiveMessageAndGivenAIResponse(req, res) {
 
     // 3. Handle Tool Calls (The Extraction Logic)
     // Inside your ReceiveMessageAndGivenAIResponse function:
-
     if (response.tool_calls?.length) {
       for (const call of response.tool_calls) {
         const { value } = call.args;
@@ -45,6 +44,6 @@ async function ReceiveMessageAndGivenAIResponse(req, res) {
   }
 };
 
-module.exports = {
+module.exports = {  
   ReceiveMessageAndGivenAIResponse
 };
