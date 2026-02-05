@@ -3,6 +3,31 @@ import { analyzeScamMessage } from '../services/geminiService.js';
 import { modelWithTools, SYSTEM_PROMPT } from '../services/aiChatService.js';
 import { getSentimentScore } from '../utils/sentimentAnalysis.js';
 
+// Combined Risk Assessment Function
+function getFinalRiskAssessment(geminiRes, sentimentRes) {
+    const GEMINI_WEIGHT = 0.7;
+    const SENTIMENT_WEIGHT = 0.3;
+
+    // Normalize Gemini score: if isScam is false, the risk is effectively 0
+    const geminiRisk = geminiRes.isScam ? geminiRes.confidenceScore : 0;
+    
+    // Combine scores
+    const totalRiskScore = (geminiRisk * GEMINI_WEIGHT) + (sentimentRes.scamProbability * SENTIMENT_WEIGHT);
+
+    // Final decision thresholds
+    let decision = "SAFE";
+    if (totalRiskScore > 0.75) decision = "HIGH_RISK_SCAM";
+    else if (totalRiskScore > 0.40) decision = "SUSPICIOUS";
+
+    return {
+        totalRiskScore: parseFloat(totalRiskScore.toFixed(3)),
+        decision: decision,
+        confidence: totalRiskScore > 0.75 ? "HIGH" : totalRiskScore > 0.40 ? "MODERATE" : "LOW",
+        // Logic: Should we trigger the Honey-Pot Agent?
+        triggerAgent: totalRiskScore > 0.5
+    };
+}
+
 async function ReceiveMessageAndProcess(req, res) {
     try {
         // 1. Safety Check: Validate request body
@@ -83,21 +108,42 @@ async function ReceiveMessageAndProcess(req, res) {
             }
 
         } else {
-            // ========== NEW SESSION ==========
-            console.log(`New session ${sessionId} - Analyzing message...`);
+            // ========== NEW SESSION - DOUBLE LAYER ANALYSIS ==========
+            console.log(`New session ${sessionId} - Running double-layer analysis...`);
 
-            // Analyze the message to identify if it's a scam
-            const analysisResult = await analyzeScamMessage(message.text, metadata);
+            // LAYER 1: Gemini AI Analysis
+            const geminiResult = await analyzeScamMessage(message.text, metadata);
+            console.log("🤖 Gemini Analysis:", {
+                isScam: geminiResult.isScam,
+                confidence: (geminiResult.confidenceScore * 100).toFixed(1) + "%"
+            });
 
-            if (!analysisResult.isScam) {
-                // Not a scammer - Create session and return simple response
+            // LAYER 2: Sentiment Analysis
+            const sentimentResult = await getSentimentScore(message.text);
+            console.log("📊 Sentiment Analysis:", {
+                scamProbability: (sentimentResult.scamProbability * 100).toFixed(1) + "%",
+                classification: sentimentResult.classification,
+                indicators: sentimentResult.indicators
+            });
+
+            // COMBINED DECISION: Weighted risk assessment
+            const finalAssessment = getFinalRiskAssessment(geminiResult, sentimentResult);
+            console.log("🎯 Final Risk Assessment:", {
+                totalRiskScore: (finalAssessment.totalRiskScore * 100).toFixed(1) + "%",
+                decision: finalAssessment.decision,
+                confidence: finalAssessment.confidence,
+                triggerAgent: finalAssessment.triggerAgent
+            });
+
+            if (!finalAssessment.triggerAgent) {
+                // SAFE - Not triggering honey-pot agent
                 const newSession = new Session({
                     sessionId: sessionId,
                     status: 'completed',
                     scamDetected: false,
                     metadata: metadata,
                     conversationHistory: [{
-                        sender: message.sender || "scammer",
+                        sender: message.sender || "user",
                         text: message.text,
                         timestamp: message.timestamp || Date.now()
                     }],
@@ -110,11 +156,11 @@ async function ReceiveMessageAndProcess(req, res) {
                     status: "success",
                     reply: "This is not identified as a scam message.",
                     scamDetected: false,
-                    confidenceScore: analysisResult.confidenceScore
+                    
                 });
 
             } else {
-                // This is a scammer - Generate AI response and create session
+                // HIGH RISK - Trigger honey-pot agent
                 const messages = [
                     ["system", SYSTEM_PROMPT],
                     ["human", message.text]
@@ -123,17 +169,6 @@ async function ReceiveMessageAndProcess(req, res) {
                 // Generate AI response
                 const aiResponse = await modelWithTools.invoke(messages);
                 const aiReply = aiResponse.content || "Oh, wait, I'm getting a call, one second...";
-
-                // Perform sentiment analysis
-                const sentimentAnalysis = await getSentimentScore(message.text);
-                console.log("==================== SENTIMENT ANALYSIS ====================");
-                console.log("Message:", message.text.substring(0, 50) + "...");
-                console.log("Sentiment Score:", sentimentAnalysis.score);
-                console.log("Magnitude:", sentimentAnalysis.magnitude);
-                console.log("Scam Probability:", (sentimentAnalysis.scamProbability * 100).toFixed(1) + "%");
-                console.log("Classification:", sentimentAnalysis.classification);
-                console.log("Indicators:", JSON.stringify(sentimentAnalysis.indicators, null, 2));
-                console.log("===========================================================");
 
                 // Create new session with both user message and AI response
                 const newSession = new Session({
@@ -153,7 +188,7 @@ async function ReceiveMessageAndProcess(req, res) {
                             timestamp: Date.now()
                         }
                     ],
-                    totalMessagesExchanged: 2 // User message + AI response
+                    totalMessagesExchanged: 2
                 });
 
                 await newSession.save();
@@ -162,9 +197,7 @@ async function ReceiveMessageAndProcess(req, res) {
                     status: "success",
                     reply: aiReply,
                     scamDetected: true,
-                    confidenceScore: analysisResult.confidenceScore,
                     sessionStatus: 'active',
-                    sentimentAnalysis: sentimentAnalysis
                 });
             }
         }

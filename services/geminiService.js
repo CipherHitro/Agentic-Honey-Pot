@@ -161,7 +161,7 @@ async function analyzeScamMessage(messageText, metadata) {
       generationConfig: {
         responseMimeType: "application/json", // Forces JSON output
       },
-    });
+   });
 
     const responseText = result.response.text();
 
