@@ -2,6 +2,7 @@ import Session from '../models/scamModel.js';
 import { analyzeScamMessage } from '../services/geminiService.js';
 import { modelWithTools, SYSTEM_PROMPT } from '../services/aiChatService.js';
 import { getSentimentScore } from '../utils/sentimentAnalysis.js';
+import { ADVANCED_AGENT_SYSTEM_PROMPT } from '../prompt.js';
 
 // Combined Risk Assessment Function
 function getFinalRiskAssessment(geminiRes, sentimentRes) {
@@ -60,7 +61,7 @@ async function ReceiveMessageAndProcess(req, res) {
                 
                 // Build conversation messages for AI
                 const messages = [
-                    ["system", SYSTEM_PROMPT],
+                    ["system", ADVANCED_AGENT_SYSTEM_PROMPT],
                     ...conversationHistory.map(m => [
                         m.sender === "scammer" ? "human" : "ai", 
                         m.text
@@ -162,7 +163,7 @@ async function ReceiveMessageAndProcess(req, res) {
             } else {
                 // HIGH RISK - Trigger honey-pot agent
                 const messages = [
-                    ["system", SYSTEM_PROMPT],
+                    ["system", ADVANCED_AGENT_SYSTEM_PROMPT],
                     ["human", message.text]
                 ];
 

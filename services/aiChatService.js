@@ -2,20 +2,55 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { configDotenv } from "dotenv";
+// import { ADVANCED_AGENT_SYSTEM_PROMPT } from "../prompt";
 configDotenv()
+
 // 1. DEFINE THE TOOL: The AI's "hands" to save data to your DB
+// const recordScamIntelligence = tool(
+//   async ({ type, value }) => {
+//     // Logic to update MongoDB goes here
+//     console.log(`[SYSTEM] Saved ${type}: ${value} to MongoDB.`);
+//     return `The ${type} has been securely logged.`; 
+//   },
+//   {
+//     name: "record_scam_data",
+//     description: "Use this tool to save UPI IDs, bank accounts, or phishing links from the scammer.",
+//     schema: z.object({
+//       type: z.enum(["upiId", "bankAccount", "phishingLink"]),
+//       value: z.string().describe("The specific ID or URL provided by the scammer"),
+//     }),
+//   }
+// );
+
 const recordScamIntelligence = tool(
   async ({ type, value }) => {
-    // Logic to update MongoDB goes here
-    console.log(`[SYSTEM] Saved ${type}: ${value} to MongoDB.`);
-    return `The ${type} has been securely logged.`; 
+    // Logic to update your MongoDB Session document
+    // Tip: Use $addToSet in MongoDB to avoid duplicate entries for the same ID
+    console.log(`[DATA EXTRACTION] Found ${type}: ${value}`);
+    return `Logged ${type} successfully.`; 
   },
   {
-    name: "record_scam_data",
-    description: "Use this tool to save UPI IDs, bank accounts, or phishing links from the scammer.",
+    name: "record_scam_intelligence",
+    description: `
+      USE THIS TOOL IMMEDIATELY when the scammer reveals actionable intelligence in the chat.
+      Identify and extract these specific types:
+      - upiId: Any UPI handle (e.g., name@okaxis, 9876543210@ybl).
+      - bankAccount: Numerical account numbers or IFSC codes mentioned for transfer.
+      - phishingLink: Any suspicious URLs, shortened links (bit.ly, tinyurl), or fake login portals.
+      - phoneNumber: 10-digit mobile numbers or contact digits provided by the scammer.
+      - suspiciousKeyword: High-pressure words used by the scammer (e.g., 'OTP', 'blocked', 'urgent', 'Police', 'KYC').
+      
+      Only extract information provided by the 'scammer', never the 'user'.
+    `,
     schema: z.object({
-      type: z.enum(["upiId", "bankAccount", "phishingLink"]),
-      value: z.string().describe("The specific ID or URL provided by the scammer"),
+      type: z.enum([
+        "upiId", 
+        "bankAccount", 
+        "phishingLink", 
+        "phoneNumber", 
+        "suspiciousKeyword"
+      ]),
+      value: z.string().describe("The exact text, ID, link, or keyword provided by the scammer."),
     }),
   }
 );
