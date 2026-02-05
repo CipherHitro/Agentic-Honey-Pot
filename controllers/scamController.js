@@ -10,6 +10,7 @@ async function ReceiveMessageAndProcess(req, res) {
                 message: "Missing sessionId in request body"
             });
         }
+    
 
         const { sessionId, message, metadata } = req.body;
 

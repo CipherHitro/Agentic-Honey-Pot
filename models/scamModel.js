@@ -10,6 +10,7 @@ const MessageSchema = new mongoose.Schema({
   timestamp: { type: Number, default: () => Date.now() }
 });
 
+
 const SessionSchema = new mongoose.Schema({
   sessionId: { 
     type: String, 
