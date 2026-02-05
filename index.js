@@ -2,7 +2,6 @@ const express = require('express');
 require('dotenv').config();
 const { connectMongoDB } = require('./connection')
 const useScamRoute  = require('./routes/scamRoute')
-const responseRoute  = require('./routes/responseRoute')
 
 // Mongo DB connections
 connectMongoDB(process.env.MONGOURL).then(() => {console.log("MongoDB connected")}).catch((err) => console.error(err))

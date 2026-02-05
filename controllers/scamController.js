@@ -1,6 +1,7 @@
 const Session = require('../models/scamModel')
 const { analyzeScamMessage } = require('../services/geminiService')
 const { modelWithTools, SYSTEM_PROMPT } = require('../services/aiChatService')
+const { getSentimentScore } = require('../utils/sentimentAnalysis')
 
 async function ReceiveMessageAndProcess(req, res) {
     try {
@@ -18,7 +19,7 @@ async function ReceiveMessageAndProcess(req, res) {
                 message: "Missing message text in request body"
             });
         }
-        
+
         const { sessionId, message, metadata } = req.body;
 
         // 2. Check if session already exists
@@ -123,6 +124,17 @@ async function ReceiveMessageAndProcess(req, res) {
                 const aiResponse = await modelWithTools.invoke(messages);
                 const aiReply = aiResponse.content || "Oh, wait, I'm getting a call, one second...";
 
+                // Perform sentiment analysis
+                const sentimentAnalysis = await getSentimentScore(message.text);
+                console.log("==================== SENTIMENT ANALYSIS ====================");
+                console.log("Message:", message.text.substring(0, 50) + "...");
+                console.log("Sentiment Score:", sentimentAnalysis.score);
+                console.log("Magnitude:", sentimentAnalysis.magnitude);
+                console.log("Scam Probability:", (sentimentAnalysis.scamProbability * 100).toFixed(1) + "%");
+                console.log("Classification:", sentimentAnalysis.classification);
+                console.log("Indicators:", JSON.stringify(sentimentAnalysis.indicators, null, 2));
+                console.log("===========================================================");
+
                 // Create new session with both user message and AI response
                 const newSession = new Session({
                     sessionId: sessionId,
@@ -151,7 +163,8 @@ async function ReceiveMessageAndProcess(req, res) {
                     reply: aiReply,
                     scamDetected: true,
                     confidenceScore: analysisResult.confidenceScore,
-                    sessionStatus: 'active'
+                    sessionStatus: 'active',
+                    sentimentAnalysis: sentimentAnalysis
                 });
             }
         }
