@@ -18,7 +18,7 @@ async function ReceiveMessageAndProcess(req, res) {
                 message: "Missing message text in request body"
             });
         }
-
+        
         const { sessionId, message, metadata } = req.body;
 
         // 2. Check if session already exists
