@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { connectMongoDB } from './connection.js';
 import useScamRoute from './routes/scamRoute.js';
+import { apiKeyAuth } from './middlewares/apiKeyAuth.js';
 
 dotenv.config();
 
@@ -13,8 +14,8 @@ const port = 4000;
 // Middlewares 
 app.use(express.json())
 
-// API Routes
-app.use('/api', useScamRoute);
+// API Routes - Protected with API Key
+app.use('/api', apiKeyAuth, useScamRoute);
 // app.use('/api', responseRoute);
 
 app.get('/', (req, res) => {
