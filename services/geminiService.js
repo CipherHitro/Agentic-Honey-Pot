@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
@@ -171,6 +171,4 @@ async function analyzeScamMessage(messageText, metadata) {
   }
 }
 
-module.exports = {
-    analyzeScamMessage,
-}
+export { analyzeScamMessage };

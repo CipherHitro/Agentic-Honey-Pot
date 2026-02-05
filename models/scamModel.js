@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 
 const MessageSchema = new mongoose.Schema({
   sender: { 
@@ -48,4 +48,5 @@ const SessionSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const Session = mongoose.model('Session', SessionSchema);
-module.exports = Session
+
+export default Session;

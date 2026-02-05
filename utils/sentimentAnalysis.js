@@ -1,4 +1,5 @@
-const natural = require('natural');
+import natural from 'natural';
+
 const analyzer = new natural.SentimentAnalyzer('English', natural.PorterStemmer, 'afinn');
 const tokenizer = new natural.WordTokenizer();
 
@@ -69,6 +70,4 @@ async function getSentimentScore(text) {
     };
 }
 
-module.exports = {
-    getSentimentScore,
-}
+export { getSentimentScore };

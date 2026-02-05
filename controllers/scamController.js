@@ -1,7 +1,7 @@
-const Session = require('../models/scamModel')
-const { analyzeScamMessage } = require('../services/geminiService')
-const { modelWithTools, SYSTEM_PROMPT } = require('../services/aiChatService')
-const { getSentimentScore } = require('../utils/sentimentAnalysis')
+import Session from '../models/scamModel.js';
+import { analyzeScamMessage } from '../services/geminiService.js';
+import { modelWithTools, SYSTEM_PROMPT } from '../services/aiChatService.js';
+import { getSentimentScore } from '../utils/sentimentAnalysis.js';
 
 async function ReceiveMessageAndProcess(req, res) {
     try {
@@ -179,6 +179,4 @@ async function ReceiveMessageAndProcess(req, res) {
     }
 }
 
-module.exports = {
-    ReceiveMessageAndProcess
-}
+export { ReceiveMessageAndProcess };
