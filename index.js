@@ -8,7 +8,7 @@ import { apiKeyAuth } from './middlewares/apiKeyAuth.js';
 dotenv.config();
 
 // Mongo DB connections
-connectMongoDB(process.env.MONGODB_URI).then(() => { console.log("MongoDB connected") }).catch((err) => console.error(err))
+connectMongoDB(process.env.MONGOURL).then(() => { console.log("MongoDB connected") }).catch((err) => console.error(err))
 const app = express();
 const port = 4000;
 
