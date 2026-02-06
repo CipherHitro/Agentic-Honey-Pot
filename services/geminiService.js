@@ -156,19 +156,29 @@ async function analyzeScamMessage(messageText, metadata) {
   const prompt = `Current Message: "${messageText}\n\n Metadata : ${metadata}"`;
 
   try {
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: {
         responseMimeType: "application/json", // Forces JSON output
       },
-   });
+    }, {
+      signal: controller.signal
+    }).finally(() => clearTimeout(timeoutId));
 
     const responseText = result.response.text();
 
     return JSON.parse(responseText); // Convert string to JS Object
   } catch (error) {
     console.error("Gemini Error:", error);
-    return { scamDetected: false, probability: 0, error: "AI processing failed" };
+    if (error.name === 'AbortError') {
+      console.error("Gemini request timed out");
+      return { isScam: false, confidenceScore: 0, error: "Request timed out", detectedIndicators: [], scamType: "not_scam", reasoning: "Analysis timed out" };
+    }
+    return { isScam: false, confidenceScore: 0, error: "AI processing failed", detectedIndicators: [], scamType: "not_scam", reasoning: "Processing error" };
   }
 }
 

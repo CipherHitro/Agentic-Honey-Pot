@@ -60,14 +60,18 @@ export async function checkAndSubmitFinalResult(sessionId) {
         console.log(`[FINAL SUBMISSION] Submitting results for session ${sessionId}...`);
         console.log(`[FINAL SUBMISSION] Payload:`, JSON.stringify(payload, null, 2));
 
-        // Make POST request to GUVI API
+        // Make POST request to GUVI API with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+        
         const response = await fetch(GUVI_API_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
-        });
+            body: JSON.stringify(payload),
+            signal: controller.signal
+        }).finally(() => clearTimeout(timeoutId));
 
         const responseData = await response.json();
 

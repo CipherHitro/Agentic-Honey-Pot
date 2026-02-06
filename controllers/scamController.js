@@ -6,6 +6,16 @@ import { ADVANCED_AGENT_SYSTEM_PROMPT } from '../prompt.js';
 import { ToolMessage } from "@langchain/core/messages";
 import { checkAndSubmitFinalResult } from './finalSubmissionController.js';
 
+// Helper function to add timeout to promises
+function withTimeout(promise, timeoutMs, errorMessage = 'Operation timed out') {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => 
+            setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
+        )
+    ]);
+}
+
 // Combined Risk Assessment Function
 function getFinalRiskAssessment(geminiRes, sentimentRes) {
     const GEMINI_WEIGHT = 0.7;
@@ -90,8 +100,12 @@ async function ReceiveMessageAndProcess(req, res) {
 
             console.log(`[AI PROCESSING] Session ${sessionId} - Message #${session.totalMessagesExchanged + 1}`);
 
-            // Step 2: First AI invocation (may include tool calls)
-            let aiResponse = await modelWithTools.invoke(conversationMessages);
+            // Step 2: First AI invocation (may include tool calls) with timeout
+            let aiResponse = await withTimeout(
+                modelWithTools.invoke(conversationMessages),
+                90000, // 90 second timeout for AI response
+                'AI response timed out after 90 seconds'
+            );
 
             // Step 3: Process tool calls if present
             if (aiResponse.tool_calls && aiResponse.tool_calls.length > 0) {
@@ -135,7 +149,11 @@ async function ReceiveMessageAndProcess(req, res) {
                     ...toolMessages // The ToolMessage responses
                 ];
 
-                aiResponse = await modelWithTools.invoke(finalMessages);
+                aiResponse = await withTimeout(
+                    modelWithTools.invoke(finalMessages),
+                    90000, // 90 second timeout
+                    'AI response timed out after 90 seconds'
+                );
             }
 
             // Step 5: Extract final AI reply with validation
@@ -261,8 +279,12 @@ async function ReceiveMessageAndProcess(req, res) {
 
                 console.log(`[AI PROCESSING] New scam session - Generating first response`);
 
-                // Step 1: First AI invocation
-                let aiResponse = await modelWithTools.invoke(messages);
+                // Step 1: First AI invocation with timeout
+                let aiResponse = await withTimeout(
+                    modelWithTools.invoke(messages),
+                    90000, // 90 second timeout
+                    'AI response timed out after 90 seconds'
+                );
 
                 // Step 2: Process tool calls if present
                 if (aiResponse.tool_calls && aiResponse.tool_calls.length > 0) {
@@ -327,7 +349,11 @@ async function ReceiveMessageAndProcess(req, res) {
                         ...toolMessages
                     ];
 
-                    aiResponse = await modelWithTools.invoke(finalMessages);
+                    aiResponse = await withTimeout(
+                        modelWithTools.invoke(finalMessages),
+                        90000, // 90 second timeout
+                        'AI response timed out after 90 seconds'
+                    );
                 }
 
                 // Step 4: Validate AI response
@@ -397,14 +423,19 @@ async function ReceiveMessageAndProcess(req, res) {
     } catch (error) {
         console.error("[CRITICAL ERROR]", error);
         
+        // Check if it's a timeout error
+        const isTimeoutError = error.name === 'AbortError' || 
+                               error.message?.includes('timeout') || 
+                               error.message?.includes('timed out');
+        
         // Try to mark session as error state
         try {
             if (req.body.sessionId) {
                 await Session.findOneAndUpdate(
                     { sessionId: req.body.sessionId },
                     { 
-                        status: 'error', 
-                        agentNotes: `Error: ${error.message}` 
+                        status: isTimeoutError ? 'active' : 'error', 
+                        agentNotes: `${isTimeoutError ? 'Timeout - retryable' : 'Error'}: ${error.message}` 
                     }
                 );
             }
@@ -412,10 +443,20 @@ async function ReceiveMessageAndProcess(req, res) {
             console.error("[DB ERROR]", dbError);
         }
 
+        // Return appropriate error response
+        if (isTimeoutError) {
+            return res.status(504).json({ 
+                status: "error", 
+                message: "Request processing timed out. Please try again.",
+                retryable: true
+            });
+        }
+
         return res.status(500).json({ 
             status: "error", 
             message: "An error occurred processing your request",
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+            retryable: false
         });
     }
 }
