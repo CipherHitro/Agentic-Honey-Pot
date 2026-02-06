@@ -84,15 +84,18 @@ const recordScamIntelligence = tool(
   }
 );
 
-const model = new ChatGroq({
-  apiKey: getGroqKey(),
-  model: "llama-3.3-70b-versatile",
-  temperature: 0.85, // Higher for more human-like variability
-  timeout: 120000, // 2 minute timeout for AI requests
-  maxRetries: 1, // Retry failed requests up to 2 times
-});
+// Function to create a new model with rotated API key
+function getModelWithTools() {
+  const model = new ChatGroq({
+    apiKey: getGroqKey(), // Gets a new key each time
+    model: "llama-3.3-70b-versatile",
+    temperature: 0.85, // Higher for more human-like variability
+    timeout: 120000, // 2 minute timeout for AI requests
+    maxRetries: 1, // Retry failed requests up to 1 time
+  });
 
-const modelWithTools = model.bindTools([recordScamIntelligence]);
+  return model.bindTools([recordScamIntelligence]);
+}
 
 const SYSTEM_PROMPT = ADVANCED_AGENT_SYSTEM_PROMPT;
-export { modelWithTools, recordScamIntelligence, SYSTEM_PROMPT };
+export { getModelWithTools, recordScamIntelligence, SYSTEM_PROMPT };

@@ -1,6 +1,6 @@
 import Session from '../models/scamModel.js';
 import { analyzeScamMessage } from '../services/geminiService.js';
-import { modelWithTools, recordScamIntelligence, SYSTEM_PROMPT } from '../services/aiChatService.js';
+import { getModelWithTools, recordScamIntelligence, SYSTEM_PROMPT } from '../services/aiChatService.js';
 import { getSentimentScore } from '../utils/sentimentAnalysis.js';
 import { ADVANCED_AGENT_SYSTEM_PROMPT } from '../prompt.js';
 import { ToolMessage } from "@langchain/core/messages";
@@ -101,6 +101,7 @@ async function ReceiveMessageAndProcess(req, res) {
             console.log(`[AI PROCESSING] Session ${sessionId} - Message #${session.totalMessagesExchanged + 1}`);
 
             // Step 2: First AI invocation (may include tool calls) with timeout
+            const modelWithTools = getModelWithTools(); // Get new model with rotated API key
             let aiResponse = await withTimeout(
                 modelWithTools.invoke(conversationMessages),
                 90000, // 90 second timeout for AI response
@@ -149,8 +150,9 @@ async function ReceiveMessageAndProcess(req, res) {
                     ...toolMessages // The ToolMessage responses
                 ];
 
+                const finalModel = getModelWithTools(); // Get new model for second invocation
                 aiResponse = await withTimeout(
-                    modelWithTools.invoke(finalMessages),
+                    finalModel.invoke(finalMessages),
                     90000, // 90 second timeout
                     'AI response timed out after 90 seconds'
                 );
@@ -280,6 +282,7 @@ async function ReceiveMessageAndProcess(req, res) {
                 console.log(`[AI PROCESSING] New scam session - Generating first response`);
 
                 // Step 1: First AI invocation with timeout
+                const modelWithTools = getModelWithTools(); // Get new model with rotated API key
                 let aiResponse = await withTimeout(
                     modelWithTools.invoke(messages),
                     90000, // 90 second timeout
@@ -349,8 +352,9 @@ async function ReceiveMessageAndProcess(req, res) {
                         ...toolMessages
                     ];
 
+                    const finalModel = getModelWithTools(); // Get new model for second invocation
                     aiResponse = await withTimeout(
-                        modelWithTools.invoke(finalMessages),
+                        finalModel.invoke(finalMessages),
                         90000, // 90 second timeout
                         'AI response timed out after 90 seconds'
                     );
