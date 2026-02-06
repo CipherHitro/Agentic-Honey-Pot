@@ -1,7 +1,7 @@
 import Session from '../models/scamModel.js';
 
 const GUVI_API_ENDPOINT = "https://hackathon.guvi.in/api/updateHoneyPotFinalResult";
-const MESSAGE_THRESHOLD = 10;
+const MESSAGE_THRESHOLD = 12;
 
 /**
  * Check if session has reached message threshold and has extracted intelligence
