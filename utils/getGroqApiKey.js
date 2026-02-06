@@ -5,6 +5,7 @@ let currentKey = 0;
 
 function getGroqKey(){
     currentKey = (currentKey + 1) % keys.length
+    console.log("API key using : ", currentKey)
     return keys[currentKey];
 }
 export { getGroqKey }
