@@ -13,12 +13,10 @@ const app = express();
 const port = 4000;
 
 // Middlewares 
-app.use('/api', apiKeyAuth, useScamRoute);
+app.use(express.json())
 
 // API Routes
-app.use(express.json())
-// app.use('/api', useScamRoute);
-// app.use('/api', responseRoute);
+app.use('/api', apiKeyAuth, useScamRoute);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
