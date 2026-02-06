@@ -44,7 +44,12 @@ const SessionSchema = new mongoose.Schema({
   },
 
   agentNotes: { type: String, default: "" },
-  totalMessagesExchanged: { type: Number, default: 0 }
+  totalMessagesExchanged: { type: Number, default: 0 },
+  
+  // Final submission tracking
+  finalResultSubmitted: { type: Boolean, default: false },
+  finalResultSubmittedAt: { type: Date },
+  guviApiResponse: { type: mongoose.Schema.Types.Mixed }
 }, { timestamps: true });
 
 const Session = mongoose.model('Session', SessionSchema);

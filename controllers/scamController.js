@@ -4,6 +4,7 @@ import { modelWithTools, recordScamIntelligence, SYSTEM_PROMPT } from '../servic
 import { getSentimentScore } from '../utils/sentimentAnalysis.js';
 import { ADVANCED_AGENT_SYSTEM_PROMPT } from '../prompt.js';
 import { ToolMessage } from "@langchain/core/messages";
+import { checkAndSubmitFinalResult } from './finalSubmissionController.js';
 
 // Combined Risk Assessment Function
 function getFinalRiskAssessment(geminiRes, sentimentRes) {
@@ -158,6 +159,12 @@ async function ReceiveMessageAndProcess(req, res) {
             await session.save();
 
             console.log(`[RESPONSE SENT] Session ${sessionId} - Total extracted: UPI(${session.extractedIntelligence.upiIds.length}), Bank(${session.extractedIntelligence.bankAccounts.length}), Links(${session.extractedIntelligence.phishingLinks.length}), Phones(${session.extractedIntelligence.phoneNumbers.length})`);
+
+            // Step 8: Check if ready to submit final results to GUVI API
+            const submissionResult = await checkAndSubmitFinalResult(sessionId);
+            if (submissionResult.submitted) {
+                console.log(`[GUVI SUBMISSION] ✅ Final results submitted for session ${sessionId}`);
+            }
 
             return res.status(200).json({
                 status: "success",
