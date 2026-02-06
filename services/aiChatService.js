@@ -3,9 +3,8 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import Session from "../models/scamModel.js";
 import { ADVANCED_AGENT_SYSTEM_PROMPT } from "../prompt.js";
-// import Session from "../models/scamModel";
-// const Session = require("../models/scamModel");
-
+import { getGroqKey } from '../utils/getGroqApiKey.js';
+// import Session from '../models/scamModel';
 // TOOL: Extract and store scam intelligence
 const recordScamIntelligence = tool(
   async ({ findings, sessionId }) => {
@@ -86,11 +85,11 @@ const recordScamIntelligence = tool(
 );
 
 const model = new ChatGroq({
-  apiKey: process.env.GROQ_API,
+  apiKey: getGroqKey(),
   model: "llama-3.3-70b-versatile",
   temperature: 0.85, // Higher for more human-like variability
   timeout: 120000, // 2 minute timeout for AI requests
-  maxRetries: 2, // Retry failed requests up to 2 times
+  maxRetries: 5, // Retry failed requests up to 2 times
 });
 
 const modelWithTools = model.bindTools([recordScamIntelligence]);
