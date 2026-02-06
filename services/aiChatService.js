@@ -89,7 +89,7 @@ const model = new ChatGroq({
   model: "openai/gpt-oss-20b",
   temperature: 0.85, // Higher for more human-like variability
   timeout: 120000, // 2 minute timeout for AI requests
-  maxRetries: 5, // Retry failed requests up to 2 times
+  maxRetries: 1, // Retry failed requests up to 2 times
 });
 
 const modelWithTools = model.bindTools([recordScamIntelligence]);
