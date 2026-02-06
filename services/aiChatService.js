@@ -86,7 +86,7 @@ const recordScamIntelligence = tool(
 
 const model = new ChatGroq({
   apiKey: getGroqKey(),
-  model: "llama-3.3-70b-versatile",
+  model: "llama-3.1-8b-instant",
   temperature: 0.85, // Higher for more human-like variability
   timeout: 120000, // 2 minute timeout for AI requests
   maxRetries: 5, // Retry failed requests up to 2 times
